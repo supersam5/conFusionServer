@@ -1,0 +1,18 @@
+ promotion
+ {
+      "name": "Weekend Grand Buffet",
+      "image": "images/buffet.png",
+      "label": "New",
+      "price": "19.99",
+      "description": "Featuring . . .",
+      "featured": false
+}
+leader
+{
+      "name": "Peter Pan",
+      "image": "images/alberto.png",
+      "designation": "Chief Epicurious Officer",
+      "abbr": "CEO",
+      "description": "Our CEO, Peter, . . .",
+      "featured": false
+}
