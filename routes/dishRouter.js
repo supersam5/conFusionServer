@@ -18,7 +18,7 @@ dishRouter.route('/')
 }).post((req, res, next)=>{
     Dishes.create(req.body).then((dish)=>{
         res.statusCode = 200;
-        res.setHeader('Content-Type','text/plain');
+        res.setHeader('Content-Type','application/json');
         res.json(dish);
         console.log("Dish created:", dish)
 
@@ -30,7 +30,7 @@ dishRouter.route('/')
 }).delete((req, res, next)=>{
     Dishes.remove({}).then((log)=>{
         res.statusCode = 200;
-        res.setHeader('Content-Type','text/plain');
+        res.setHeader('Content-Type','application/json');
         res.json(log);
         res.end('Deleting all dishes');
     },  (err)=> next(err)).catch((err)=> next(err));
