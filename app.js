@@ -6,19 +6,20 @@ var logger = require('morgan');
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var passport = require('passport');
-var authentiate= require('./authenticate');
+var authenticate= require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dishRouter  = require('./routes/dishRouter');
 var leaderRouter  = require('./routes/leaderRouter');
 var promoRouter   = require('./routes/promoRouter');
+var config= require('./config');
 
 const mongoose = require('mongoose');
 
 const Dishes = require('./models/dishes');
 
-const url = 'mongodb://localhost:27017/conFusion';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 
 connect.then((db) => {
@@ -35,16 +36,17 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser('12345-67890-09876-54321'));
+/* not needed when we use jwt
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',
   saveUninitialized: false,
   resave: false,
   store: new fileStore()
-}));
+}));*/
 app.use(passport.initialize());
-app.use(passport.session());
-function auth(req, res, next) {
+
+/*function auth(req, res, next) {
   console.log(req.session);
   //console.log(req.headers);
   if (!req.user) {
@@ -58,10 +60,10 @@ function auth(req, res, next) {
   else {
     next();
   }
-}
+}*/
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use(auth);
+//app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 

@@ -1,6 +1,7 @@
 const express =require('express');
 const bodyParser = require('body-parser');
-const mongoose= require('mongoose')
+const mongoose= require('mongoose');
+var authenticate= require('../authenticate');
 const Leaders = require('../models/leaders');
 const leaderRouter = express.Router();
 leaderRouter.subscribe(bodyParser.json());
@@ -14,7 +15,7 @@ leaderRouter.route('/')
         res.end('These are all our leaders');
     }, (err)=>next(err))
     
-}).post((req, res, next)=>{
+}).post(authenticate.verifyUser,(req, res, next)=>{
     Leaders.create(req.body).then((leader)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json');
@@ -22,7 +23,7 @@ leaderRouter.route('/')
         res.end('Leader above has been added');
     }, (err)=>next(err))
     
-}).put((req, res, next)=>{
+}).put(authenticate.verifyUser,(req, res, next)=>{
     res.statusCode= 403;
     res.setHeader('Content-Type', 'application/json');
     res.json({
@@ -30,7 +31,7 @@ leaderRouter.route('/')
         "message": "PUT operations not supported on /leaders"
     })
     res.end('PUT operations not supported on /leaders');
-}).delete((req, res, next)=>{
+}).delete(authenticate.verifyUser,(req, res, next)=>{
     Leaders.find({}).then((Leaders)=>{
         Leaders.forEach((leader)=>{
             Leaders.findByIdAndRemove(leader._id).then(()=>{
@@ -61,7 +62,7 @@ leaderRouter.route('/:leaderId')
         }
     )
 
-}).post((req, res, next)=>{
+}).post(authenticate.verifyUser,(req, res, next)=>{
     res.json('Post operator not supported on /promotions'+ req.params.leaderId+ 'endpoint').end();
 }).put((req, res, next)=>{
     Leaders.findByIdAndUpdate(req.params.leaderId,{
@@ -81,7 +82,7 @@ leaderRouter.route('/:leaderId')
     )
     /*res.write('Updating the Promotion '+ req.params.promoId);
     res.end('Will update the promo '+ req.body.name+ 'with the details'+ req.body.description);*/
-}).delete( (req, res, next)=>{
+}).delete(authenticate.verifyUser, (req, res, next)=>{
     Leaders.findByIdAndDelete(req.params.leaderId).then((deletedLeader)=>{
         res.status(200);
         res.json(deletedLeader);
