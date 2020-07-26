@@ -8,7 +8,7 @@ dishRouter.subscribe(bodyParser.json());
 
 dishRouter.route('/')
 .get((req, res, next)=>{
-    Dishes.find({}).then( (dishes)=>{
+    Dishes.find({}).populate('comments.author').then( (dishes)=>{
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json');
         res.json(dishes);
@@ -42,7 +42,9 @@ dishRouter.route('/')
 
 dishRouter.route('/:dishId')
 .get((req, res, next)=>{
-    Dishes.findById(req.params.dishId).then(
+    Dishes.findById(req.params.dishId)
+    .populate('comments.author')
+    .then(
         (dish)=>{
             res.status(200);
             res.setHeader('Content-Type','application/json');
@@ -80,7 +82,9 @@ dishRouter.route('/:dishId')
 
 dishRouter.route('/:dishId/comments')
 .get((req, res, next)=>{
-    Dishes.findById(req.params.dishId).then(
+    Dishes.findById(req.params.dishId)
+    .populate('comments.author')
+    .then(
         (dish)=>{
             res.status(200);
             res.setHeader('Content-Type','application/json');
@@ -94,18 +98,24 @@ dishRouter.route('/:dishId/comments')
 }).post(authenticate.verifyUser,(req, res, next)=>{
     Dishes.findById(req.params.dishId).then(
         (dish)=>{
-        if(dish != null){
-            dish.comments.push({
-                comment: req.body.comment,
-                author: req.body.author,
-                rating: req.body.rating
-            });
+            if (dish != null) {
+                req.body.author= req.user._id;
+                dish.comments.push({
+                    comment: req.body.comment,
+                    author: req.body.author,
+                    rating: req.body.rating
+                });
             dish.save().then(
                 (dish)=>{
-                    res.status(200);
-                    res.setHeader('Content-Type', 'application/json');
-                    res.json(dish);
-                    console.log("comment added");
+                    Dishes.findById(dish._id)
+                    .populate('comments.author').then((dish)=>{
+                        res.status(200);
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json(dish);
+                        console.log("comment added");  
+                    })
+
+                    
                 }, (err)=> next(err)
             );
             
@@ -148,7 +158,9 @@ dishRouter.route('/:dishId/comments')
 });
 dishRouter.route('/:dishId/comments/:commentId').
 get((req, res, next)=>{
-    Dishes.findById(req.params.dishId).then(
+    Dishes.findById(req.params.dishId)
+    .populate('comments.author')
+    .then(
         (dish)=>{
             if(dish!=null){
                 res.status(200);
@@ -167,12 +179,23 @@ get((req, res, next)=>{
         Dishes.findById(req.params.dishId).then(
             (dish)=>{
                 if(dish!= null){
-                    dish.comments.id(req.params.commentId).comment =req.body.comment;
+                    if(req.body.rating){
+                        dish.comments.id(req.params.commentId).comment =req.body.comment;
+                    }
+                    if(req.body.rating){
+                        dish.comments.id(req.params.commentId).rating =req.body.rating;
+                    }
+                   
                     dish.save().then(
                         (dish)=>{
-                            res.status(200);
-                            res.setHeader('Content-Type', 'text/plain');
-                            res.send("comment updated")
+                            Dishes.findById(dish._id).populate('comments.author').then(
+                                (dish)=>{
+                                    res.status(200);
+                                    res.setHeader('Content-Type', 'text/plain');
+                                    res.send("comment updated")
+                                }
+                            )
+                            
                         }, (err)=> next(err)
                     )
                 }else{
