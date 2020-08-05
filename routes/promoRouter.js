@@ -15,14 +15,14 @@ promoRouter.route('/')
         res.end('These are all our promotions');
     }, (err)=>next(err))
     
-}).post(authenticate.verifyUser,(req, res, next)=>{
+}).post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Promotions.create(req.body).then((promo)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json')
         res.json(promo).end('These are all our promotions');
     }, (err)=>next(err)).catch((err)=>next(err));
     console.log('Will add a promotion: '+ req.body.name+ ' with details '+ req.body.description);
-}).put(authenticate.verifyUser,(req, res, next)=>{
+}).put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     res.statusCode= 403;
     res.setHeader('Content-Type', 'application/json');
     res.json({
@@ -30,7 +30,7 @@ promoRouter.route('/')
         "code": "PUT operations not supported on /promotions"
     })
     res.end('PUT operations not supported on /promotions');
-}).delete(authenticate.verifyUser,(req, res, next)=>{
+}).delete(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Promotions.find({}).then((Promos)=>{
         Promos.forEach((promo)=>{
             Promotions.findByIdAndRemove(promo._id).then(()=>{
@@ -61,9 +61,9 @@ promoRouter.route('/:promoId')
         }
     )
 
-}).post(authenticate.verifyUser,(req, res, next)=>{
+}).post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     res.json('Post operator not supported on /promotions'+ req.params.promoId+ 'endpoint').end();
-}).put(authenticate.verifyUser,(req, res, next)=>{
+}).put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Promotions.findByIdAndUpdate(req.params.promoId,{
         name: req.body.name,
         image: req.body.image,
@@ -81,7 +81,7 @@ promoRouter.route('/:promoId')
     )
     /*res.write('Updating the Promotion '+ req.params.promoId);
     res.end('Will update the promo '+ req.body.name+ 'with the details'+ req.body.description);*/
-}).delete(authenticate.verifyUser, (req, res, next)=>{
+}).delete(authenticate.verifyUser,authenticate.verifyAdmin, (req, res, next)=>{
     Promotions.findByIdAndDelete(req.params.promoId).then((deletedPromo)=>{
         res.status(200);
         res.json(deletedPromo);
