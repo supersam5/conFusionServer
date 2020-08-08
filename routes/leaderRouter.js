@@ -3,11 +3,12 @@ const bodyParser = require('body-parser');
 const mongoose= require('mongoose');
 var authenticate= require('../authenticate');
 const Leaders = require('../models/leaders');
+const cors = require('./cors');
 const leaderRouter = express.Router();
 leaderRouter.subscribe(bodyParser.json());
 
 leaderRouter.route('/')
-.get((req, res, next)=>{
+.get(cors.cors,(req, res, next)=>{
     Leaders.find({}).then((leaders)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json')
@@ -15,7 +16,7 @@ leaderRouter.route('/')
         res.end('These are all our leaders');
     }, (err)=>next(err))
     
-}).post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
+}).post(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Leaders.create(req.body).then((leader)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json');
@@ -23,7 +24,7 @@ leaderRouter.route('/')
         res.end('Leader above has been added');
     }, (err)=>next(err))
     
-}).put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
+}).put(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     res.statusCode= 403;
     res.setHeader('Content-Type', 'application/json');
     res.json({
@@ -31,7 +32,7 @@ leaderRouter.route('/')
         "message": "PUT operations not supported on /leaders"
     })
     res.end('PUT operations not supported on /leaders');
-}).delete(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
+}).delete(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Leaders.find({}).then((Leaders)=>{
         Leaders.forEach((leader)=>{
             Leaders.findByIdAndRemove(leader._id).then(()=>{
@@ -50,7 +51,7 @@ leaderRouter.route('/')
 })
 
 leaderRouter.route('/:leaderId')
-.get((req, res, next)=>{
+.get(cors.cors,(req, res, next)=>{
     Leaders.findById(req.params.leaderId).then(
         (promo)=>{
             res.status(200);
@@ -62,9 +63,9 @@ leaderRouter.route('/:leaderId')
         }
     )
 
-}).post(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
+}).post(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     res.json('Post operator not supported on /promotions'+ req.params.leaderId+ 'endpoint').end();
-}).put(authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
+}).put(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
     Leaders.findByIdAndUpdate(req.params.leaderId,{
         name: req.body.name,
         image: req.body.image,
@@ -82,7 +83,7 @@ leaderRouter.route('/:leaderId')
     )
     /*res.write('Updating the Promotion '+ req.params.promoId);
     res.end('Will update the promo '+ req.body.name+ 'with the details'+ req.body.description);*/
-}).delete(authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next)=>{
+}).delete(cors.corsWithOptions,authenticate.verifyUser, authenticate.verifyAdmin,(req, res, next)=>{
     Leaders.findByIdAndDelete(req.params.leaderId).then((deletedLeader)=>{
         res.status(200);
         res.json(deletedLeader);
