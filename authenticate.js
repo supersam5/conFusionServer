@@ -2,6 +2,7 @@ var passport = require('passport');
 var LocalStrategy =require('passport-local').Strategy;
 var User = require('./models/users');
 var JwtStrategy = require('passport-jwt').Strategy; 
+var FacebookStrategy = require('passport-facebook-token');
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
 var config = require('./config');
@@ -45,3 +46,16 @@ exports.verifyAdmin = function(req, res, next){
         next(err);
     }
 };
+exports.Facebook = passport.use(new FacebookStrategy({
+    clientID: config.facebook.clientId,
+    clientSecret: config.facebook.clientSecret,
+    fbGraphVersion: 'v3.0'
+},(accessToken, refreshToken, profile, done)=>{
+    User.findOne({facebookId : profile.id}, (err, user)=>{
+        if(err){
+            return done(err, null)
+        }else{
+            return done(null, user)
+        }
+    })
+}))

@@ -15,6 +15,9 @@ var User  = new schema({
     lastname:{
         type: String,
         default: " "
+    },
+    facebookId: {
+        type: String
     }
 
 }, {

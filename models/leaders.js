@@ -29,6 +29,6 @@ const leaderSchema= new Schema({
     timestamps: true
 })
 
-leaders = mongoose.model("Leader", leaderSchema)
+const leaders = mongoose.model("Leader", leaderSchema)
 
 module.exports = leaders;
