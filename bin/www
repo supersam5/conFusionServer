@@ -34,7 +34,7 @@ server.on('listening', onListening);
 
 var options = {
   key : fs.readFileSync(__dirname+ '/private.key'),
-  cert : fs.readFileSync(__dirname+ '/certificate.pem')
+  cert : fs.readFileSync(__dirname+ '/certificate.crt')
 }
 
 var secureServer = https.createServer(options, app).listen(app.get('secPort'),()=>{

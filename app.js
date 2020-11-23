@@ -15,6 +15,7 @@ var leaderRouter  = require('./routes/leaderRouter');
 var promoRouter   = require('./routes/promoRouter');
 var uploadRouter = require('./routes/uploadRouter');
 var favRouter = require('./routes/favourites')
+var commentRouter = require('./routes/commentRouter')
 var config= require('./config');
 
 const mongoose = require('mongoose');
@@ -36,6 +37,7 @@ app.all('*', (req, res, next)=>{
     res.redirect(307,'https://'+req.hostname+':'+ app.get('secPort') + req.url );
   }
 })
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -79,7 +81,8 @@ app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
 app.use('/imageUpload',uploadRouter);
-app.use('/favourites',favRouter)
+app.use('/favorites',favRouter)
+app.use('/comments', commentRouter)
 
 
 // catch 404 and forward to error handler

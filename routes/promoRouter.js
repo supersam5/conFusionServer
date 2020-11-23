@@ -9,7 +9,7 @@ promoRouter.subscribe(bodyParser.json());
 
 promoRouter.route('/')
 .get(cors.cors,(req, res, next)=>{
-    Promotions.find({}).then((promos)=>{
+    Promotions.find(req.query).then((promos)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json')
         res.json(promos)

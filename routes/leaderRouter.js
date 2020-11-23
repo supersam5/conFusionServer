@@ -9,11 +9,11 @@ leaderRouter.subscribe(bodyParser.json());
 
 leaderRouter.route('/')
 .get(cors.cors,(req, res, next)=>{
-    Leaders.find({}).then((leaders)=>{
+    Leaders.find(req.query).then((leaders)=>{
         res.status(200);
         res.setHeader('Content-Type','application/json')
         res.json(leaders)
-        res.end('These are all our leaders');
+        //res.end('These are all our leaders');
     }, (err)=>next(err))
     
 }).post(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin,(req, res, next)=>{
