@@ -12,8 +12,8 @@ let favRouter = express.Router()
 
 favRouter.use(bodyParser.json())
 
-favRouter.route('/').options(cors.corsWithOptions, (req, res)=> res.sendStatus())
-.get(cors.cors, authenticate.verifyUser,(req, res, next)=>{
+favRouter.route('/')
+.get( authenticate.verifyUser,(req, res, next)=>{
     Favourites.find({user : req.user._id}).populate(['user','dishes']).then(
         (favourites)=>{
             res.status(200);
@@ -26,7 +26,7 @@ favRouter.route('/').options(cors.corsWithOptions, (req, res)=> res.sendStatus()
     )
     
 })
-.delete(cors.cors, authenticate.verifyUser, (req, res, next)=>{
+.delete( authenticate.verifyUser, (req, res, next)=>{
     Favourites.findOneAndDelete({user : ObjectId(req.user._id)}).then(
         (favourites)=>{
             
@@ -40,7 +40,7 @@ favRouter.route('/').options(cors.corsWithOptions, (req, res)=> res.sendStatus()
         (err)=>next(err)
     )
 })
-.post(cors.cors, authenticate.verifyUser, (req, res, next)=> {
+.post( authenticate.verifyUser, (req, res, next)=> {
     console.log(req.body[0])
     if(Array.isArray(req.body)){
         Favourites.findOne({user : ObjectId(req.user._id)}).then(
@@ -102,8 +102,8 @@ favRouter.route('/').options(cors.corsWithOptions, (req, res)=> res.sendStatus()
 }
 )
 
-favRouter.route('/:dishid').options(cors.corsWithOptions, (req, res) => res.sendStatus())
-.get(cors.cors, authenticate.verifyUser,(req, res, next)=>{
+favRouter.route('/:dishid')
+.get( authenticate.verifyUser,(req, res, next)=>{
     Favourites.find({user : req.user._id}).populate(['user','dishes']).then(
         (favourites)=>{
            if(!favourites){
@@ -137,7 +137,7 @@ favRouter.route('/:dishid').options(cors.corsWithOptions, (req, res) => res.send
     )
     
 })
-.post(cors.cors, authenticate.verifyUser, (req, res, next) => {
+.post( authenticate.verifyUser, (req, res, next) => {
         Favourites.findOne({user : ObjectId(req.user._id)}).then(
             (favourites)=>{
                 if(favourites){
@@ -187,7 +187,7 @@ favRouter.route('/:dishid').options(cors.corsWithOptions, (req, res) => res.send
         )
     }
     )
-    .delete(cors.cors, authenticate.verifyUser, (req, res, next)=>{
+    .delete( authenticate.verifyUser, (req, res, next)=>{
         Favourites.findOne({user: ObjectId(req.user._id)}).then(
             (favs)=>{
                 if(favs){

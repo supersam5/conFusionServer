@@ -3,15 +3,17 @@ const cors = require('cors');
 const app= express();
 
 const whitelist = ['http://localhost:3000', 'https://localhost:3433', 'http://SAMUEL-PC:3005','https://localhost:3005','http://localhost:3005'];
-var corsOptionsDelegate = (req, callback)=>{
-    var corsOptions;
-
-    if(whitelist.lastIndexOf(req.header('Origin')) !== -1){
-        corsOptions = {origin : true};
-    }else {
-        corsOptions = {origin : false};
+var corsOptions = {
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+          console.log("origin : true")
+        callback(null, true)
+      } else {
+        console.log("origin : false") 
+        callback(new Error('Not allowed by CORS'))
+      }
     }
-    callback(null, corsOptions)
-};
+  }
+
 exports.cors = cors();
-exports.corsWithOptions = cors({corsOptionsDelegate});
+exports.corsWithOptions = cors(corsOptions);

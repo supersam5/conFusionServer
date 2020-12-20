@@ -8,8 +8,7 @@ const commentRouter = express.Router();
 commentRouter.subscribe(bodyParser.json());
 
 commentRouter.route('/')
-.options(cors.corsWithOptions, (req, res)=> res.sendStatus(200))
-.get(cors.cors,(req, res, next)=>{
+.get((req, res, next)=>{
     Comments.find(req.query)
     .populate('author')
     .then(
@@ -24,7 +23,7 @@ commentRouter.route('/')
     
 
 })
-.post(cors.corsWithOptions,authenticate.verifyUser,(req, res, next)=>{
+.post(authenticate.verifyUser,(req, res, next)=>{
     if(req.body!=null){
         req.body.author = req.user._id;
         Comments.create(req.body).then(
@@ -44,12 +43,12 @@ commentRouter.route('/')
         return next(err); 
     }
     
-}).put(cors.corsWithOptions,authenticate.verifyUser,(req, res, next)=>{
+}).put(authenticate.verifyUser,(req, res, next)=>{
     res.status(403);
     res.end("PUT operations not supported on /comments")
     console.log("PUT operations not supported on /comments")
     
-}).delete(cors.corsWithOptions,authenticate.verifyUser,authenticate.verifyAdmin, (req, res, next)=>{
+}).delete(authenticate.verifyUser,authenticate.verifyAdmin, (req, res, next)=>{
     Comments.remove({}).then(
         (resp)=>{
             res.statusCode=200;
@@ -61,8 +60,8 @@ commentRouter.route('/')
     
 });
 commentRouter.route('/:commentId')
-.options(cors.corsWithOptions, (req, res)=> res.sendStatus(200))
-.get(cors.cors,(req, res, next)=>{
+.options( (req, res)=> res.sendStatus(200))
+.get((req, res, next)=>{
     Comments.findById(req.params.commentId)
     .populate('author')
     .then(
@@ -74,12 +73,12 @@ commentRouter.route('/:commentId')
             
         }, (err)=> next(err)
     )
-}).post(cors.corsWithOptions,authenticate.verifyUser,
+}).post(authenticate.verifyUser,
     (req,res)=>{
         res.statusCode=403;
         res.end("post operations not supported on /comments"+req.params.commentId)
     }
-).put(cors.corsWithOptions,authenticate.verifyUser,
+).put(authenticate.verifyUser,
     (req, res, next)=>{
         Comments.find(req.params.commentId).then(
             (comment)=>{
@@ -109,7 +108,7 @@ commentRouter.route('/:commentId')
         )
         
     }
-).delete(cors.corsWithOptions,authenticate.verifyUser,(req, res, next)=>{
+).delete(authenticate.verifyUser,(req, res, next)=>{
     Comments.findById(req.params.commentId).then(
         (comment)=>{
             if(comment=null){

@@ -7,6 +7,7 @@ var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate= require('./authenticate');
+var cors = require('cors')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -30,6 +31,7 @@ connect.then((db) => {
 }, (err) => { console.log(err); });
 
 var app = express();
+
 app.all('*', (req, res, next)=>{
   if (req.secure){
     return next();
@@ -42,9 +44,12 @@ app.all('*', (req, res, next)=>{
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cors({origin : config.clientUrl}))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.options(cors({origin : config.clientUrl}), (req, res)=> res.sendStatus());
+
 //app.use(cookieParser('12345-67890-09876-54321'));
 /* not needed when we use jwt
 app.use(session({
