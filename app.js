@@ -10,7 +10,7 @@ var authenticate= require('./authenticate');
 var cors = require('cors')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+let usersRouter = require('./routes/users');
 var dishRouter  = require('./routes/dishRouter');
 var leaderRouter  = require('./routes/leaderRouter');
 var promoRouter   = require('./routes/promoRouter');
